@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -29,6 +31,8 @@ public class CalendarActivity extends AppCompatActivity {
     Toolbar toolBar;
     int selectedYear, selectedMonth, selectedDay;
     String fileName;
+    SQLiteDatabase sqlDB;
+    MyDBHelper myHelper = new MyDBHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,11 +80,12 @@ public class CalendarActivity extends AppCompatActivity {
 
                 //파일명 산출
                 fileName = getFileName(selectedYear, selectedMonth, selectedDay);
-                String strPath = "/data/data/com.androidprogramming.myjournal/files/";
-                File file = new File(strPath + fileName+ ".txt");
-
-                //파일이 없는 경우 AlertDialog를 띄워서 새로 작성할 것인지 물어봄
-                if(file.exists()==false){
+                sqlDB = myHelper.getReadableDatabase();
+                Cursor cursor;
+                cursor = sqlDB.rawQuery("SELECT EXISTS (SELECT * FROM journal_table WHERE date=" + fileName + ") AS success;", null);
+                cursor.moveToFirst();
+                //해당 튜플이 없는 경우 AlertDialog를 띄워서 새로 작성할 것인지 물어봄
+                if(cursor.getInt(0)==0){
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(CalendarActivity.this);
                     alertDialog.setMessage("작성된 일기가 없습니다.\n새로 작성하시겠습니까?");
                     alertDialog.setPositiveButton("확인", new DialogInterface.OnClickListener() {
@@ -103,14 +108,17 @@ public class CalendarActivity extends AppCompatActivity {
                         }
                     });
                     alertDialog.show();
-                }
-                else {          //작성된 내용이 있는 경우, 일기보기 액티비티로 전환
+                }else {          //작성된 내용이 있는 경우, 일기보기 액티비티로 전환
                     Intent intent = new Intent(CalendarActivity.this,ReadJournalActivity.class);
 
                     //파일명을 일기보기 액티비티로 넘겨줌
                     intent.putExtra("fileName", fileName);
                     startActivity(intent);
                 }
+
+                cursor.close();
+                sqlDB.close();
+
             }
         });
 

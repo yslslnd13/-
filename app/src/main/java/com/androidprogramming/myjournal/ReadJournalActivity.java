@@ -1,28 +1,24 @@
 package com.androidprogramming.myjournal;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 
 public class ReadJournalActivity extends AppCompatActivity {
 
-    TextView tvJournal;
+    TextView tvJournal, tvTitle, tvDate;
     String fileName;
     Toolbar toolBar;
+    SQLiteDatabase sqlDB;
+    MyDBHelper myHelper = new MyDBHelper(this);
+    int date;
+    String title, content;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -31,6 +27,8 @@ public class ReadJournalActivity extends AppCompatActivity {
 
         //View와 id를 매칭
         tvJournal = findViewById(R.id.tvJournal);
+        tvTitle = findViewById(R.id.tvTitle);
+        tvDate = findViewById(R.id.tvDate);
 
         //툴바 관련
         toolBar = findViewById(R.id.read_toolbar);
@@ -40,17 +38,23 @@ public class ReadJournalActivity extends AppCompatActivity {
         Intent intent = getIntent();
         fileName = intent.getExtras().getString("fileName");
 
-        //파일 연결해서 TextView에 보여주는 코드
-        try {
-            FileInputStream inFs = openFileInput(fileName + ".txt");
-            byte[] txt = new byte[30];
-            inFs.read(txt);
-            String strJournal = new String(txt);
-            tvJournal.setText(strJournal);
+        //DB에 있는 내용을 보여주는 코드
+        sqlDB = myHelper.getReadableDatabase();
+        Cursor cursor;
+        cursor = sqlDB.rawQuery("SELECT * FROM journal_table WHERE date = ?", new String[] {fileName});
+        cursor.moveToFirst();
+        date = cursor.getInt(0);
+        title = cursor.getString(1);
+        content = cursor.getString(2);
 
-        }catch (IOException e){
-            System.out.println();
-        }
+
+        tvJournal.setText(content);
+        tvTitle.setText(title);
+        tvDate.setText(Integer.toString(date));
+
+        cursor.close();
+        sqlDB.close();
+
     }
 
     @Override
