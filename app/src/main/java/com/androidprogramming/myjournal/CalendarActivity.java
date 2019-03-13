@@ -168,4 +168,9 @@ public class CalendarActivity extends AppCompatActivity {
 
         return y+m+d;
     }
+
+    static String intDateToStrDate(int date) {
+        String strDate = ((Integer) date).toString();
+        return strDate.substring(0, 4) + "년 " + strDate.substring(4, 6) + "월 " + strDate.subSequence(6, strDate.length()) + "일";
+    }
 }
