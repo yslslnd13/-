@@ -82,9 +82,10 @@ public class CalendarActivity extends AppCompatActivity {
                 fileName = getFileName(selectedYear, selectedMonth, selectedDay);
                 sqlDB = myHelper.getReadableDatabase();
                 Cursor cursor;
-                cursor = sqlDB.rawQuery("SELECT EXISTS (SELECT * FROM journal_table WHERE date=" + fileName + ") AS success;", null);
+                cursor = sqlDB.rawQuery("SELECT EXISTS (SELECT * FROM journal_table WHERE date=?)",
+                        new String[] {fileName});
                 cursor.moveToFirst();
-                //해당 튜플이 없는 경우 AlertDialog를 띄워서 새로 작성할 것인지 물어봄
+                //해당 날짜의 데이터(일기)가 없는 경우 AlertDialog를 띄워서 새로 작성할 것인지 물어봄
                 if(cursor.getInt(0)==0){
                     AlertDialog.Builder alertDialog = new AlertDialog.Builder(CalendarActivity.this);
                     alertDialog.setMessage("작성된 일기가 없습니다.\n새로 작성하시겠습니까?");
