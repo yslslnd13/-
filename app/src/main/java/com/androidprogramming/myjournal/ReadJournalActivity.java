@@ -8,6 +8,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 public class ReadJournalActivity extends AppCompatActivity {
@@ -57,9 +58,25 @@ public class ReadJournalActivity extends AppCompatActivity {
 
     }
 
+    //툴바의 액션 등록
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.read_action, menu);
         return true;
+    }
+    //툴바의 액션 선택시
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()){
+            case R.id.action_edit:
+                Intent intent = new Intent(ReadJournalActivity.this,WriteJournalActivity.class);
+                intent.putExtra("fileName", fileName);
+                startActivity(intent);
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 }

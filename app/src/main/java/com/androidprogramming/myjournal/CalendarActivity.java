@@ -17,6 +17,10 @@ import android.widget.CalendarView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.prolificinteractive.materialcalendarview.CalendarDay;
+import com.prolificinteractive.materialcalendarview.MaterialCalendarView;
+import com.prolificinteractive.materialcalendarview.OnDateSelectedListener;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -25,7 +29,7 @@ import java.util.Calendar;
 public class CalendarActivity extends AppCompatActivity {
 
     //변수선언
-    CalendarView calView;
+    MaterialCalendarView calView;
     Button btnView, btnWrite, btnExit;
     TextView tvJournal;
     Toolbar toolBar;
@@ -49,12 +53,15 @@ public class CalendarActivity extends AppCompatActivity {
         toolBar = findViewById(R.id.calendar_toolbar);
         setSupportActionBar(toolBar);
 
-        //처음에 선택되어있는 날짜(오늘)의 연,월,일을 변수에 대입하는 코드
-        Calendar nowDay = Calendar.getInstance();
-        nowDay.setTimeInMillis(calView.getDate());
-        selectedYear = nowDay.get(Calendar.YEAR);
-        selectedMonth = nowDay.get(Calendar.MONTH);
-        selectedDay = nowDay.get(Calendar.DATE);
+        //
+
+        //프로그램 실행하면 현재 날짜가 포커되게 해주는 코드
+        calView.setDateSelected(Calendar.getInstance(), true);
+
+        //포커스된 날짜(헌재날짜)를 가져와서 변수에 저장
+        selectedYear = calView.getSelectedDate().getYear();
+        selectedMonth = calView.getSelectedDate().getMonth();
+        selectedDay = calView.getSelectedDate().getDay();
 
         //일기 작성 버튼 클릭시 WriteJournalActivity로 이동
         btnWrite.setOnClickListener(new View. OnClickListener(){
@@ -132,14 +139,16 @@ public class CalendarActivity extends AppCompatActivity {
         });
 
         //날짜가 변경되었을때 연,월,일 변수값을 변경시켜주는 코드
-        calView.setOnDateChangeListener(new CalendarView.OnDateChangeListener(){
+        calView.setOnDateChangedListener(new OnDateSelectedListener() {
             @Override
-            public void onSelectedDayChange(@NonNull CalendarView view, int year, int month, int dayOfMonth) {
-                selectedYear = year;
-                selectedMonth = month;
-                selectedDay = dayOfMonth;
+            public void onDateSelected(@NonNull MaterialCalendarView widget, @NonNull CalendarDay date, boolean selected) {
+                selectedYear = date.getYear();
+                selectedMonth = date.getMonth()+1;
+                selectedDay = date.getDay();
+
             }
-        });
+
+    });
     }
 
     @Override
