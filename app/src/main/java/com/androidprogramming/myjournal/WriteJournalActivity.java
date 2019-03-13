@@ -42,7 +42,9 @@ public class WriteJournalActivity extends AppCompatActivity {
 
         //fileName을 가져옴
         fileName = intent.getExtras().getString("fileName");
-        tvDate.setText(fileName);
+
+        String strFileName = CalendarActivity.intDateToStrDate(Integer.parseInt(fileName));
+        tvDate.setText(strFileName);
 
         //이미 작성중인 파일이 있는지 확인하는 코드
         sqlDB = myHelper.getReadableDatabase();

@@ -51,16 +51,11 @@ public class ReadJournalActivity extends AppCompatActivity {
 
         tvJournal.setText(content);
         tvTitle.setText(title);
-        tvDate.setText(intDateToStrDate(date));
+        tvDate.setText(CalendarActivity.intDateToStrDate(date));
 
         cursor.close();
         sqlDB.close();
 
-    }
-
-    private static String intDateToStrDate(int date) {
-        String strDate = ((Integer) date).toString();
-        return strDate.substring(0, 4) + "년 " + strDate.substring(4, 6) + "월 " + strDate.subSequence(6, strDate.length()) + "일";
     }
 
     @Override
