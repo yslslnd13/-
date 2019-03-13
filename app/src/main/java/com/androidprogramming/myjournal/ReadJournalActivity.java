@@ -41,20 +41,26 @@ public class ReadJournalActivity extends AppCompatActivity {
         //DB에 있는 내용을 보여주는 코드
         sqlDB = myHelper.getReadableDatabase();
         Cursor cursor;
-        cursor = sqlDB.rawQuery("SELECT * FROM journal_table WHERE date = ?", new String[] {fileName});
+        cursor = sqlDB.rawQuery("SELECT * FROM journal_table WHERE date = ?", new String[]{fileName});
         cursor.moveToFirst();
         date = cursor.getInt(0);
         title = cursor.getString(1);
         content = cursor.getString(2);
 
+        System.out.println("date :" + date);
 
         tvJournal.setText(content);
         tvTitle.setText(title);
-        tvDate.setText(Integer.toString(date));
+        tvDate.setText(intDateToStrDate(date));
 
         cursor.close();
         sqlDB.close();
 
+    }
+
+    private static String intDateToStrDate(int date) {
+        String strDate = ((Integer) date).toString();
+        return strDate.substring(0, 4) + "년 " + strDate.substring(4, 6) + "월 " + strDate.subSequence(6, strDate.length()) + "일";
     }
 
     @Override
